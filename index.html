@@ -1,482 +1,490 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Timesheet Calculator</title>
-    <meta
-      name="description"
-      content="A simple, premium calculator for adding hours and minutes for your weekly timesheet."
-    />
-    <style>
-      :root {
-        --bg: #ffffff;
-        --fg: #000000;
-        --accent: #ff6600; /* Vibrant Orange */
-        --accent-hover: #e65c00;
-        --gray-light: #f5f5f7;
-        --gray-mid: #e5e5ea;
-        --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-        --radius: 12px;
-        --font-main:
-          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
-          Arial, sans-serif;
-      }
 
-      * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-        -webkit-font-smoothing: antialiased;
-      }
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Timesheet Calculator</title>
+  <meta name="description"
+    content="A simple, premium calculator for adding hours and minutes for your weekly timesheet." />
+  <style>
+    :root {
+      --bg: #ffffff;
+      --fg: #000000;
+      --accent: #ff6600;
+      /* Vibrant Orange */
+      --accent-hover: #e65c00;
+      --gray-light: #f5f5f7;
+      --gray-mid: #e5e5ea;
+      --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      --radius: 12px;
+      --font-main:
+        -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+        Arial, sans-serif;
+    }
 
-      body {
-        font-family: var(--font-main);
-        background-color: var(--gray-light);
-        color: var(--fg);
-        line-height: 1.5;
-        display: flex;
-        justify-content: center;
-        padding: 40px 20px;
-      }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
 
+    body {
+      font-family: var(--font-main);
+      background-color: var(--gray-light);
+      color: var(--fg);
+      line-height: 1.5;
+      display: flex;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 800px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+    }
+
+    @media (max-width: 768px) {
       .container {
-        width: 100%;
-        max-width: 800px;
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 32px;
+        grid-template-columns: 1fr;
       }
+    }
 
-      @media (max-width: 768px) {
-        .container {
-          grid-template-columns: 1fr;
-        }
-      }
+    /* Card components */
+    .card {
+      background: var(--bg);
+      padding: 24px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+    }
 
-      /* Card components */
-      .card {
-        background: var(--bg);
-        padding: 24px;
-        border-radius: var(--radius);
-        box-shadow: var(--shadow);
-        display: flex;
-        flex-direction: column;
-      }
+    h1,
+    h2 {
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      margin-bottom: 20px;
+    }
 
-      h1,
-      h2 {
-        font-weight: 700;
-        letter-spacing: -0.5px;
-        margin-bottom: 20px;
-      }
+    h1 {
+      font-size: 24px;
+      color: var(--fg);
+    }
 
-      h1 {
-        font-size: 24px;
-        color: var(--fg);
-      }
-      h2 {
-        font-size: 18px;
-        color: var(--fg);
-        border-bottom: 1px solid var(--gray-mid);
-        padding-bottom: 12px;
-      }
+    h2 {
+      font-size: 18px;
+      color: var(--fg);
+      border-bottom: 1px solid var(--gray-mid);
+      padding-bottom: 12px;
+    }
 
-      /* Calculator Section */
-      .calc-display {
-        background: var(--gray-light);
-        padding: 16px;
-        border-radius: var(--radius);
-        text-align: right;
-        margin-bottom: 16px;
-        min-height: 80px;
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-end;
-      }
+    /* Calculator Section */
+    .calc-display {
+      background: var(--gray-light);
+      padding: 16px;
+      border-radius: var(--radius);
+      text-align: right;
+      margin-bottom: 16px;
+      min-height: 80px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+    }
 
-      .calc-history {
-        color: #8e8e93;
-        font-size: 14px;
-        height: 20px;
-        overflow: hidden;
-      }
+    .calc-history {
+      color: #8e8e93;
+      font-size: 14px;
+      height: 20px;
+      overflow: hidden;
+    }
 
-      .calc-current {
-        font-size: 32px;
-        font-weight: 600;
-      }
+    .calc-current {
+      font-size: 32px;
+      font-weight: 600;
+    }
 
-      .calc-keypad {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 12px;
-      }
+    .calc-keypad {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
 
-      button {
-        border: none;
-        border-radius: var(--radius);
-        padding: 16px;
-        font-size: 18px;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        font-family: inherit;
-      }
+    button {
+      border: none;
+      border-radius: var(--radius);
+      padding: 16px;
+      font-size: 18px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
 
-      .btn-num {
-        background: var(--gray-mid);
-        color: var(--fg);
-      }
-      .btn-num:hover {
-        background: #d1d1d6;
-      }
+    .btn-num {
+      background: var(--gray-mid);
+      color: var(--fg);
+    }
 
-      .btn-op {
-        background: var(--fg);
-        color: var(--bg);
-      }
-      .btn-op:hover {
-        background: #333;
-      }
+    .btn-num:hover {
+      background: #d1d1d6;
+    }
 
-      .btn-accent {
-        background: var(--accent);
-        color: var(--bg);
-        grid-column: span 2;
-      }
-      .btn-accent:hover {
-        background: var(--accent-hover);
-      }
+    .btn-op {
+      background: var(--fg);
+      color: var(--bg);
+    }
 
-      .btn-clear {
-        color: var(--accent);
-        background: transparent;
-        border: 1px solid var(--accent);
-      }
-      .btn-clear:hover {
-        background: rgba(255, 102, 0, 0.05);
-      }
+    .btn-op:hover {
+      background: #333;
+    }
 
-      #weekly-rows {
-        display: flex;
-        flex-direction: column;
-      }
+    .btn-accent {
+      background: var(--accent);
+      color: var(--bg);
+      grid-column: span 2;
+    }
 
-      .day-row {
-        display: grid;
-        grid-template-columns: 100px 1fr 1fr 40px;
-        align-items: center;
-        gap: 10px;
-        margin-bottom: 20px;
-      }
+    .btn-accent:hover {
+      background: var(--accent-hover);
+    }
 
-      .day-label {
-        font-weight: 600;
-        font-size: 14px;
-        text-transform: uppercase;
-        color: #8e8e93;
-      }
+    .btn-clear {
+      color: var(--accent);
+      background: transparent;
+      border: 1px solid var(--accent);
+    }
 
-      .input-group {
-        display: flex;
-        align-items: center;
-        background: var(--gray-light);
-        border-radius: 8px;
-        padding: 8px 12px;
-      }
+    .btn-clear:hover {
+      background: rgba(255, 102, 0, 0.05);
+    }
 
-      .input-group input {
-        border: none;
-        background: transparent;
-        width: 100%;
-        font-size: 16px;
-        font-family: inherit;
-        text-align: center;
-        outline: none;
-      }
+    #weekly-rows {
+      display: flex;
+      flex-direction: column;
+    }
 
-      .input-group span {
-        color: #8e8e93;
-        font-size: 12px;
-        margin-left: 4px;
-      }
+    .day-row {
+      display: grid;
+      grid-template-columns: 100px 1fr 1fr 40px;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
 
-      .total-section {
-        margin-top: auto;
-        padding-top: 24px;
-        border-top: 2px dashed var(--gray-mid);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
+    .day-label {
+      font-weight: 600;
+      font-size: 14px;
+      text-transform: uppercase;
+      color: #8e8e93;
+    }
 
-      .total-label {
-        font-weight: 700;
-        font-size: 20px;
-      }
-      .total-value {
-        font-weight: 700;
-        font-size: 24px;
-        color: var(--accent);
-      }
+    .input-group {
+      display: flex;
+      align-items: center;
+      background: var(--gray-light);
+      border-radius: 8px;
+      padding: 8px 12px;
+    }
 
-      /* History List */
-      .history-list {
-        font-size: 14px;
-        max-height: 150px;
-        overflow-y: auto;
-        padding-bottom: 12px;
-      }
+    .input-group input {
+      border: none;
+      background: transparent;
+      width: 100%;
+      font-size: 16px;
+      font-family: inherit;
+      text-align: center;
+      outline: none;
+    }
 
-      .history-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 6px 0;
-        color: #666;
-        border-bottom: 1px solid var(--gray-light);
-      }
+    .input-group span {
+      color: #8e8e93;
+      font-size: 12px;
+      margin-left: 4px;
+    }
 
-      .btn-remove {
-        background: transparent;
-        color: #ff3b30; /* Red */
-        padding: 4px 8px;
-        font-size: 14px;
-        border: 1px solid transparent;
-        border-radius: 4px;
-        margin-left: 8px;
-      }
+    .total-section {
+      margin-top: auto;
+      padding-top: 24px;
+      border-top: 2px dashed var(--gray-mid);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
 
-      .btn-remove:hover {
-        background: rgba(255, 59, 48, 0.05);
-        border-color: rgba(255, 59, 48, 0.2);
-      }
+    .total-label {
+      font-weight: 700;
+      font-size: 20px;
+    }
 
-      .btn-clear-all {
-        background: transparent;
-        color: #8e8e93;
-        font-size: 12px;
-        font-weight: 500;
-        text-transform: uppercase;
-        border: 1px solid var(--gray-mid);
-        padding: 4px 12px;
-        border-radius: 4px;
-        cursor: pointer;
-        transition: all 0.2s ease;
-      }
+    .total-value {
+      font-weight: 700;
+      font-size: 24px;
+      color: var(--accent);
+    }
 
-      .btn-clear-all:hover {
-        background: var(--gray-light);
-        color: var(--fg);
-        border-color: #8e8e93;
-      }
+    /* History List */
+    .history-list {
+      font-size: 14px;
+      max-height: 150px;
+      overflow-y: auto;
+      padding-bottom: 12px;
+    }
 
-      .section-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border-bottom: 1px solid var(--gray-mid);
-        margin-bottom: 16px;
-        padding-bottom: 12px;
-      }
+    .history-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 0;
+      color: #666;
+      border-bottom: 1px solid var(--gray-light);
+    }
 
-      .section-header h2 {
-        margin-bottom: 0;
-        border-bottom: none;
-        padding-bottom: 0;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <!-- Calculator Card -->
-      <main class="card" id="calc-container" tabindex="0">
-        <h1>Timesheet Calculator</h1>
-        <div class="calc-display" id="display-frame">
-          <div class="calc-history" id="display-history">Click to type...</div>
-          <div class="calc-current" id="display-current">0:00</div>
-        </div>
-        <div class="calc-keypad">
-          <button class="btn-num" onclick="press('7')">7</button>
-          <button class="btn-num" onclick="press('8')">8</button>
-          <button class="btn-num" onclick="press('9')">9</button>
-          <button class="btn-op" onclick="setOp('+')">+</button>
+    .btn-remove {
+      background: transparent;
+      color: #ff3b30;
+      /* Red */
+      padding: 4px 8px;
+      font-size: 14px;
+      border: 1px solid transparent;
+      border-radius: 4px;
+      margin-left: 8px;
+    }
 
-          <button class="btn-num" onclick="press('4')">4</button>
-          <button class="btn-num" onclick="press('5')">5</button>
-          <button class="btn-num" onclick="press('6')">6</button>
-          <button class="btn-op" onclick="press(':')">:</button>
+    .btn-remove:hover {
+      background: rgba(255, 59, 48, 0.05);
+      border-color: rgba(255, 59, 48, 0.2);
+    }
 
-          <button class="btn-num" onclick="press('1')">1</button>
-          <button class="btn-num" onclick="press('2')">2</button>
-          <button class="btn-num" onclick="press('3')">3</button>
-          <button class="btn-clear" onclick="clearCalc()">C</button>
+    .btn-clear-all {
+      background: transparent;
+      color: #8e8e93;
+      font-size: 12px;
+      font-weight: 500;
+      text-transform: uppercase;
+      border: 1px solid var(--gray-mid);
+      padding: 4px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
 
-          <button class="btn-num" onclick="press('0')">0</button>
-          <button class="btn-accent" onclick="calculate()">ADD TO TOTAL</button>
-        </div>
+    .btn-clear-all:hover {
+      background: var(--gray-light);
+      color: var(--fg);
+      border-color: #8e8e93;
+    }
 
-        <div class="section-header" style="margin-top: 20px;">
-          <span class="day-label" style="text-transform: none; color: var(--fg);">History</span>
-          <button class="btn-clear-all" onclick="clearAllCalc()">Clear All</button>
-        </div>
-        <div class="history-list" id="history-items">
-          <!-- Calc entries will appear here -->
-        </div>
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--gray-mid);
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+    }
 
-        <div class="total-section">
-          <span class="total-label">Subtotal</span>
-          <span class="total-value" id="calc-total">0:00</span>
-        </div>
-      </main>
+    .section-header h2 {
+      margin-bottom: 0;
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+  </style>
+</head>
 
-      <!-- Weekly Grid Card -->
-      <section class="card">
-        <div class="section-header">
-          <h2>Weekly Timesheet</h2>
-          <button class="btn-clear-all" onclick="clearWeekly()">Clear All</button>
-        </div>
-        <div class="weekly-grid">
-          <!-- Grid rows generated by JS -->
-          <div id="weekly-rows"></div>
-        </div>
+<body>
+  <div class="container">
+    <!-- Calculator Card -->
+    <main class="card" id="calc-container" tabindex="0">
+      <h1>Timesheet Calculator</h1>
+      <div class="calc-display" id="display-frame">
+        <div class="calc-history" id="display-history">Click to type...</div>
+        <div class="calc-current" id="display-current">0:00</div>
+      </div>
+      <div class="calc-keypad">
+        <button class="btn-num" onclick="press('7')">7</button>
+        <button class="btn-num" onclick="press('8')">8</button>
+        <button class="btn-num" onclick="press('9')">9</button>
+        <button class="btn-op" onclick="setOp('+')">+</button>
 
-        <div class="total-section">
-          <span class="total-label">Weekly Total</span>
-          <span class="total-value" id="weekly-total">0:00</span>
-        </div>
-      </section>
-    </div>
+        <button class="btn-num" onclick="press('4')">4</button>
+        <button class="btn-num" onclick="press('5')">5</button>
+        <button class="btn-num" onclick="press('6')">6</button>
+        <button class="btn-op" onclick="press(':')">:</button>
 
-    <script>
-      // --- Calculator Logic ---
-      let currentInput = "";
-      let calcTotalMinutes = 0;
-      let history = [];
+        <button class="btn-num" onclick="press('1')">1</button>
+        <button class="btn-num" onclick="press('2')">2</button>
+        <button class="btn-num" onclick="press('3')">3</button>
+        <button class="btn-clear" onclick="clearCalc()">C</button>
 
-      function updateDisplay() {
-        const display = document.getElementById("display-current");
-        display.innerText = currentInput || "0:00";
-      }
+        <button class="btn-num" onclick="press('0')">0</button>
+        <button class="btn-accent" onclick="calculate()">ADD TO TOTAL</button>
+      </div>
 
-      function press(key) {
-        // Prevent multiple colons
-        if (key === ":" && currentInput.includes(":")) return;
+      <div class="section-header" style="margin-top: 20px;">
+        <span class="day-label" style="text-transform: none; color: var(--fg);">History</span>
+        <button class="btn-clear-all" onclick="clearAllCalc()">Clear All</button>
+      </div>
+      <div class="history-list" id="history-items">
+        <!-- Calc entries will appear here -->
+      </div>
 
-        // Limit length
-        if (currentInput.length > 8) return;
+      <div class="total-section">
+        <span class="total-label">Subtotal</span>
+        <span class="total-value" id="calc-total">0:00</span>
+      </div>
+    </main>
 
-        currentInput += key;
-        updateDisplay();
-      }
+    <!-- Weekly Grid Card -->
+    <section class="card">
+      <div class="section-header">
+        <h2>Weekly Timesheet</h2>
+        <button class="btn-clear-all" onclick="clearWeekly()">Clear All</button>
+      </div>
+      <div class="weekly-grid">
+        <!-- Grid rows generated by JS -->
+        <div id="weekly-rows"></div>
+      </div>
 
-      function clearCalc() {
-        currentInput = "";
-        updateDisplay();
-      }
+      <div class="total-section">
+        <span class="total-label">Weekly Total</span>
+        <span class="total-value" id="weekly-total">0:00</span>
+      </div>
+    </section>
+  </div>
 
-      function timeToMinutes(str) {
-        if (!str) return 0;
-        let parts = str.split(":");
-        let h = parseInt(parts[0]) || 0;
-        let m = parseInt(parts[1]) || 0;
-        return h * 60 + m;
-      }
+  <script>
+    // --- Calculator Logic ---
+    let currentInput = "";
+    let calcTotalMinutes = 0;
+    let history = [];
 
-      function minutesToTime(mins) {
-        let h = Math.floor(mins / 60);
-        let m = mins % 60;
-        return `${h}:${m.toString().padStart(2, "0")}`;
-      }
+    function updateDisplay() {
+      const display = document.getElementById("display-current");
+      display.innerText = currentInput || "0:00";
+    }
 
-      function calculate() {
-        if (!currentInput) return;
+    function press(key) {
+      // Prevent multiple colons
+      if (key === ":" && currentInput.includes(":")) return;
 
-        let mins = timeToMinutes(currentInput);
-        let entryId = Date.now();
-        calcTotalMinutes += mins;
+      // Limit length
+      if (currentInput.length > 8) return;
 
-        // Add to history list
-        const historyList = document.getElementById("history-items");
-        const item = document.createElement("div");
-        item.className = "history-item";
-        item.id = `entry-${entryId}`;
-        item.innerHTML = `
+      currentInput += key;
+      updateDisplay();
+    }
+
+    function clearCalc() {
+      currentInput = "";
+      updateDisplay();
+    }
+
+    function timeToMinutes(str) {
+      if (!str) return 0;
+      let parts = str.split(":");
+      let h = parseInt(parts[0]) || 0;
+      let m = parseInt(parts[1]) || 0;
+      return h * 60 + m;
+    }
+
+    function minutesToTime(mins) {
+      let h = Math.floor(mins / 60);
+      let m = mins % 60;
+      return `${h}:${m.toString().padStart(2, "0")}`;
+    }
+
+    function calculate() {
+      if (!currentInput) return;
+
+      let mins = timeToMinutes(currentInput);
+      let entryId = Date.now();
+      calcTotalMinutes += mins;
+
+      // Add to history list
+      const historyList = document.getElementById("history-items");
+      const item = document.createElement("div");
+      item.className = "history-item";
+      item.id = `entry-${entryId}`;
+      item.innerHTML = `
             <span>Entry ${history.length + 1}: <strong>+ ${currentInput}</strong></span>
             <button class="btn-remove" onclick="removeEntry('${entryId}', ${mins})">✕</button>
         `;
-        historyList.prepend(item);
+      historyList.prepend(item);
 
-        history.push({ id: entryId, value: currentInput, mins: mins });
-        currentInput = "";
-        updateDisplay();
+      history.push({ id: entryId, value: currentInput, mins: mins });
+      currentInput = "";
+      updateDisplay();
 
-        document.getElementById("calc-total").innerText =
-          minutesToTime(calcTotalMinutes);
-      }
+      document.getElementById("calc-total").innerText =
+        minutesToTime(calcTotalMinutes);
+    }
 
-      function removeEntry(id, mins) {
-        calcTotalMinutes -= mins;
-        if (calcTotalMinutes < 0) calcTotalMinutes = 0;
+    function removeEntry(id, mins) {
+      calcTotalMinutes -= mins;
+      if (calcTotalMinutes < 0) calcTotalMinutes = 0;
 
-        const item = document.getElementById(`entry-${id}`);
-        if (item) item.remove();
+      const item = document.getElementById(`entry-${id}`);
+      if (item) item.remove();
 
-        document.getElementById("calc-total").innerText =
-          minutesToTime(calcTotalMinutes);
-      }
+      document.getElementById("calc-total").innerText =
+        minutesToTime(calcTotalMinutes);
+    }
 
-      function clearAllCalc() {
-        calcTotalMinutes = 0;
-        history = [];
-        document.getElementById("calc-total").innerText = "0:00";
-        document.getElementById("history-items").innerHTML = "";
+    function clearAllCalc() {
+      calcTotalMinutes = 0;
+      history = [];
+      document.getElementById("calc-total").innerText = "0:00";
+      document.getElementById("history-items").innerHTML = "";
+      clearCalc();
+    }
+
+    // --- Keyboard Support ---
+    document.addEventListener("keydown", (e) => {
+      // Only trigger if focus is on calculator or body
+      if (
+        document.activeElement.tagName === "INPUT" ||
+        document.activeElement.tagName === "TEXTAREA"
+      )
+        return;
+
+      const key = e.key;
+
+      if (/[0-9]/.test(key)) {
+        press(key);
+      } else if (key === ":" || key === ";") {
+        press(":");
+      } else if (key === "Enter") {
+        calculate();
+      } else if (key === "Escape") {
         clearCalc();
+      } else if (key === "Backspace") {
+        currentInput = currentInput.slice(0, -1);
+        updateDisplay();
       }
+    });
 
-      // --- Keyboard Support ---
-      document.addEventListener("keydown", (e) => {
-        // Only trigger if focus is on calculator or body
-        if (
-          document.activeElement.tagName === "INPUT" ||
-          document.activeElement.tagName === "TEXTAREA"
-        )
-          return;
+    // --- Weekly Grid Logic ---
+    const days = [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday",
+    ];
+    const weeklyRowsContainer = document.getElementById("weekly-rows");
 
-        const key = e.key;
-
-        if (/[0-9]/.test(key)) {
-          press(key);
-        } else if (key === ":" || key === ";") {
-          press(":");
-        } else if (key === "Enter") {
-          calculate();
-        } else if (key === "Escape") {
-          clearCalc();
-        } else if (key === "Backspace") {
-          currentInput = currentInput.slice(0, -1);
-          updateDisplay();
-        }
-      });
-
-      // --- Weekly Grid Logic ---
-      const days = [
-        "Monday",
-        "Tuesday",
-        "Wednesday",
-        "Thursday",
-        "Friday",
-        "Saturday",
-        "Sunday",
-      ];
-      const weeklyRowsContainer = document.getElementById("weekly-rows");
-
-      function initWeekly() {
-        days.forEach((day, index) => {
-          const row = document.createElement("div");
-          row.className = "day-row";
-          row.innerHTML = `
+    function initWeekly() {
+      days.forEach((day, index) => {
+        const row = document.createElement("div");
+        row.className = "day-row";
+        row.innerHTML = `
                     <div class="day-label">${day}</div>
                     <div class="input-group">
                         <input type="number" placeholder="0" min="0" class="h-input" oninput="calcWeekly()">
@@ -488,43 +496,44 @@
                     </div>
                     <button class="btn-remove" onclick="clearDay(${index})" style="margin:0; width:40px; height:40px; display:flex; align-items:center; justify-content:center;">✕</button>
                 `;
-          weeklyRowsContainer.appendChild(row);
-        });
-      }
+        weeklyRowsContainer.appendChild(row);
+      });
+    }
 
-      function clearDay(index) {
-        const hInputs = document.querySelectorAll(".h-input");
-        const mInputs = document.querySelectorAll(".m-input");
-        hInputs[index].value = "";
-        mInputs[index].value = "";
-        calcWeekly();
-      }
+    function clearDay(index) {
+      const hInputs = document.querySelectorAll(".h-input");
+      const mInputs = document.querySelectorAll(".m-input");
+      hInputs[index].value = "";
+      mInputs[index].value = "";
+      calcWeekly();
+    }
 
-      function clearWeekly() {
-        const hInputs = document.querySelectorAll(".h-input");
-        const mInputs = document.querySelectorAll(".m-input");
-        hInputs.forEach((input) => (input.value = ""));
-        mInputs.forEach((input) => (input.value = ""));
-        calcWeekly();
-      }
+    function clearWeekly() {
+      const hInputs = document.querySelectorAll(".h-input");
+      const mInputs = document.querySelectorAll(".m-input");
+      hInputs.forEach((input) => (input.value = ""));
+      mInputs.forEach((input) => (input.value = ""));
+      calcWeekly();
+    }
 
-      function calcWeekly() {
-        const hInputs = document.querySelectorAll(".h-input");
-        const mInputs = document.querySelectorAll(".m-input");
-        let totalMins = 0;
+    function calcWeekly() {
+      const hInputs = document.querySelectorAll(".h-input");
+      const mInputs = document.querySelectorAll(".m-input");
+      let totalMins = 0;
 
-        hInputs.forEach((input, i) => {
-          let h = parseInt(input.value) || 0;
-          let m = parseInt(mInputs[i].value) || 0;
-          totalMins += h * 60 + m;
-        });
+      hInputs.forEach((input, i) => {
+        let h = parseInt(input.value) || 0;
+        let m = parseInt(mInputs[i].value) || 0;
+        totalMins += h * 60 + m;
+      });
 
-        document.getElementById("weekly-total").innerText =
-          minutesToTime(totalMins);
-      }
+      document.getElementById("weekly-total").innerText =
+        minutesToTime(totalMins);
+    }
 
-      // Initialize components
-      initWeekly();
-    </script>
-  </body>
+    // Initialize components
+    initWeekly();
+  </script>
+</body>
+
 </html>
